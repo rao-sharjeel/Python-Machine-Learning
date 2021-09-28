@@ -1,0 +1,50 @@
+# OR GATE
+
+x_inputs = [0,1]
+weights = [0.1, 0.1]
+thresh = 0.5
+weighted_sum = 0
+bias = 0
+actual_output = 1
+differance = 0
+learning_rate = 0.1
+iteration = 0
+
+def perceptron(x_inputs):
+    weighted_sum = 0
+    for x, weight in zip(x_inputs, weights):
+        weighted_sum += x*weight
+    
+    weighted_sum += bias
+    
+    if weighted_sum >= thresh:
+        print("weighted_sum = " + str(weighted_sum))
+        print("Output = 1")
+        return 1
+    else:
+        print("weighted_sum = " + str(weighted_sum))
+        print("Output = 0")
+        return 0
+        
+while True:
+    
+    iteration += 1
+    print("\n\n\n\t\t\t\t\t Iteration = " + str(iteration))
+    
+    perceptron_output = perceptron(x_inputs)
+    print("actual_output = " + str(actual_output))
+    
+    if perceptron_output == actual_output:
+        print("\nPerceptron got it RIGHT")
+        print("with weights = " + str(weights))
+        break
+        
+    else:
+        differance  = actual_output - perceptron_output 
+        i = 0
+        for x, weight in zip(x_inputs, weights):
+            weights[i] = weight + differance*x*learning_rate
+            i += 1
+        print(weights)
+        
+print("\n\t\t\t\t PERCEPTRON IS SHUTTING DOWN")
