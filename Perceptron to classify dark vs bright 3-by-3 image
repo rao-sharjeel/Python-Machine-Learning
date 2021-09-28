@@ -1,0 +1,54 @@
+x_inputs = [1, 1, 1, 1, 0, 0, 0, 1, 1]
+weights = [-0.3, 0.1, 0.2, 0.3, 0.4, 0.5, 0, -0.15, -0.15]
+thresh = 0.5555556
+weighted_sum = 0
+bias = 0
+actual_output = 1
+differance = 0
+learning_rate = 0.1
+iteration = 0
+
+
+def perceptron(x_inputs):
+    weighted_sum = 0
+    for x, weight in zip(x_inputs, weights):
+        weighted_sum += x*weight
+    
+    weighted_sum += bias
+    
+    if weighted_sum < thresh:
+        print("Image is DARK, weighted_sum = " + str(weighted_sum))
+        return 0
+    else:
+        print("Image is BRIGHT, weighted_sum = " + str(weighted_sum))
+        return 1
+
+while True:
+    
+    iteration += 1
+    print("\n\n\nIteration = " + str(iteration))
+    
+    perceptron_output = perceptron(x_inputs)
+        
+    if perceptron_output == actual_output:
+        print("\n\nperceptron_output got it RIGHT\n\n")
+        print("with weights = ")
+        print(weights)
+        
+        n = int(input("Enter 1 to test with a dark image, 0 to exit : "))
+        if n == 1:
+            new_inputs = [1, 0, 0, 0, 0, 1, 0, 1, 1]
+            perceptron(new_inputs)
+            break
+        else:
+            break
+    
+    else:
+        differance  = actual_output - perceptron_output 
+        i = 0
+        for x, weight in zip(x_inputs, weights):
+            weights[i] = weight + differance*x*learning_rate
+            i += 1
+        print(weights)
+
+print("perceptron is shutting down")
