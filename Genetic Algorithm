@@ -1,0 +1,92 @@
+import random
+genome_size = 8
+EQUATION = "x*5 + 3"
+POPULATION_SIZE = 5
+TARGET = 28
+ACCEPTABLE_ERROR = 3
+
+
+def equation(num):
+    return 5*num + 3
+
+
+def d2b(num):
+    bin_array = [bool(0)] * genome_size
+    index = 0
+    while num != 0:
+        bin_array[index] = bool(num % 2)
+        num = int(num/2)
+        index += 1
+    return bin_array
+
+
+def b2d(binary):
+    # integer_map = map(int, binary)
+    # integer_list = list(integer_map)
+    # print(binary)
+    return sum(val * (2 ** idx) for idx, val in enumerate(reversed(binary)))
+
+
+def crossover(blist1, blist2):
+    n_bits = random.randint(4, 8)
+    offset = random.randint(0, 8-n_bits)
+    for i in range(n_bits):
+        blist1[offset], blist2[offset] = blist2[offset], blist1[offset]
+        offset += 1
+    return blist1, blist2
+
+
+def Mutation(bin_list):
+    index = random.randint(0, 7)
+    bin_list[index] = not bin_list[index]
+    return bin_list
+
+
+def start_genetic_algorithm():
+    binary_arrays = []
+    for num in range(POPULATION_SIZE):
+        binary_arrays.append(d2b(random.randint(0, 10)))
+    return binary_arrays
+
+
+def fitness_evaluation(binary_arrays):
+    sorted_array = []
+    tuple_array = []
+    for i in range(POPULATION_SIZE):
+        differance = abs(TARGET - equation(b2d(binary_arrays[i])))
+        if differance <= ACCEPTABLE_ERROR:
+            return True, None, b2d(binary_arrays[i])
+        tuple_array.append((binary_arrays[i], differance))
+    tuple_array.sort(key=lambda x: x[1])
+    for i in range(5):
+        sorted_array.append(tuple_array[i][0])
+    print("Best Guess = " + str(b2d(tuple_array[0][0])) + "\n")
+    return False, sorted_array, None
+
+
+def mixing(binary_arrays):
+    new_array = []
+    random_number = random.randint(0, 1)
+    if random_number == 0:
+        for i in range(POPULATION_SIZE):
+            new_array.append(Mutation(binary_arrays[i]))
+    else:
+        for i in range(POPULATION_SIZE - 1):
+            cross_list = crossover(binary_arrays[i], binary_arrays[i+1])
+            new_array.append(cross_list[0])
+            new_array.append(cross_list[1])
+
+        del new_array[-(len(new_array) - POPULATION_SIZE):]
+    return new_array
+
+
+binary_arrays = start_genetic_algorithm()
+for generation in range(1000):
+    print("Generation = " + str(generation))
+    check, sorted_array, pred = fitness_evaluation(binary_arrays)
+    if check:
+        print("For Equation f(x) = " + str(EQUATION) + " = " + str(TARGET))
+        print("The value of x is " + str(pred))
+        break
+    else:
+        binary_arrays = mixing(sorted_array)
